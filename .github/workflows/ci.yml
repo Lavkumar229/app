@@ -62,27 +62,4 @@ jobs:
       - name: Image digest
         run: echo ${{ steps.build-and-publish.outputs.digest }}
 
-  deploy-to-aks:
-    needs: build-and-publish
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v3
-
-      - name: Set up Azure CLI
-        uses: azure/CLI@v1
-
-      - name: Azure Login
-        uses: azure/login@v1
-        with:
-          creds: ${{ secrets.AZURE_CREDENTIALS }}
-
-      - name: Set AKS context
-        run: |
-          az aks get-credentials --resource-group ${{ secrets.AKS_RESOURCE_GROUP }} --name ${{ secrets.AKS_CLUSTER_NAME }}
-
-      - name: Deploy to AKS
-        run: |
-          kubectl set image deployment/flask-deployment flask-container=${{ secrets.DOCKER_USERNAME }}/flasktest-app:latest
-          kubectl rollout status deployment/flask-deployment
-
+  
